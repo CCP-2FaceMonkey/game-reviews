@@ -4,24 +4,7 @@ import "./App.css";
 import Team from "./TeamSetup";
 import TeamName from "./TeamName";
 import TeamLarge from "./TeamSetupLargeState";
-
-const buttonStyle = {
-  padding: "10px",
-  backgroundColor: "#0087ff",
-  border: "none",
-  borderRadius: "4px",
-  margin: "10px",
-  color: "white",
-};
-
-const editButtonStyle = {
-  padding: "10px",
-  backgroundColor: "#DDD",
-  border: "none",
-  borderRadius: "4px",
-  margin: "10px",
-  color: "black",
-};
+import { buttonStyle, editButtonStyle } from './styles';
 
 const initialState = {
   team1: "lid1",
@@ -72,6 +55,7 @@ function App() {
         >
           {!editTeams ? "Edit teams" : "Close"}
         </button>
+        <div>
         <TeamName
           team={gameState.team1}
           teamNumber={1}
@@ -99,6 +83,8 @@ function App() {
         >
           minus -
         </button>
+        </div>
+        <div>
         <TeamName team={team2} teamNumber={2} color={color2} />
         Score: {!Number.isNaN(gameState.score1) ? gameState.score2 : null}
         <input
@@ -122,6 +108,7 @@ function App() {
         >
           minus -
         </button>
+        </div>
         {editTeams ? (
           <TeamLarge
             gameState={gameState}
