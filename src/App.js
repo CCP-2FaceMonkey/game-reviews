@@ -1,132 +1,51 @@
-import { useState } from "react";
-import { useTimer } from "use-timer";
+import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import axios from "axios";
+import Reviews from "./Reviews";
+import Navigation from "./Navigation";
+import Home from "./Home";
+import Videos from "./Videos";
+import GameContext from "./GameContext";
 import "./App.css";
-import Team from "./TeamSetup";
-import TeamName from "./TeamName";
-import TeamLarge from "./TeamSetupLargeState";
-import { buttonStyle, editButtonStyle } from './styles';
-
-const initialState = {
-  team1: "lid1",
-  team2: "",
-  editTeams: false,
-  color1: "white",
-  color2: "black",
-  score1: 0,
-  score2: 0,
-};
 
 function App() {
-  const { time, start, pause, reset, status } = useTimer({
-    initialTime: 90,
-    timerType: "DECREMENTAL",
-  });
-  //const [team1, setTeam1] = useState("");
-  const [team2, setTeam2] = useState("");
-  const [editTeams, setEditTeams] = useState(false);
-  //const [color, setColor] = useState("white");
-  const [color2, setColor2] = useState("black");
-
-  const [gameState, setGameState] = useState(initialState);
+  const [user, setUser] = useState("harley");
+  const [userReview, setUserReview] = useState([]);
+  const [games, setGames] = useState([]);
+  //const baseURL = "https://api.rawg.io/api/games";
+  const config = {
+    async: true,
+    crossDomain: true,
+    url: "https://rawg-video-games-database.p.rapidapi.com/games?key=a4108267f3fa46f3911b8d52738b1b9e",
+    method: "GET",
+    headers: {
+      "x-rapidapi-key": "e6ef05302emsh9c46dd59d7ac5d1p13a2d8jsneb37aae7d452",
+      "x-rapidapi-host": "rawg-video-games-database.p.rapidapi.com",
+    },
+  };
+  console.log("url", config.url);
+  React.useEffect(() => {
+    axios.get(`${config.url}`, config).then((response) => {
+      setGames(response.data.results);
+    });
+  }, []);
+  console.log("games", games);
   return (
-    <div className="App">
-      {/* TODO: Game clock */}
-      {/* - haldid utan um tima */}
-      {/* - geta buid til tvo lid */}
-      {/* - geta sett inn skor og uppfeart */}
-      <header className="App-header">
-        <h1>GAME CLOCK</h1>
-        <div>
-          <button style={buttonStyle} onClick={start}>
-            Start
-          </button>
-          <button style={buttonStyle} onClick={pause}>
-            Pause
-          </button>
-          <button style={buttonStyle} onClick={reset}>
-            Reset
-          </button>
-        </div>
-        <p>Elapsed time: {time}</p>
-        {status === "RUNNING" && <p>Running...</p>}
-        <button
-          style={editButtonStyle}
-          onClick={() => setEditTeams(!editTeams)}
-        >
-          {!editTeams ? "Edit teams" : "Close"}
-        </button>
-        <div>
-        <TeamName
-          team={gameState.team1}
-          teamNumber={1}
-          color={gameState.color1}
-        />
-        Score: {!Number.isNaN(gameState.score1) ? gameState.score1 : null}
-        <input
-          type="number"
-          value={parseInt(gameState.score1)}
-          onChange={(e) => {
-            setGameState({ ...gameState, score1: parseInt(e.target.value) });
-          }}
-        ></input>
-        <button
-          onClick={() => {
-            setGameState({ ...gameState, score1: gameState.score1 + 1 });
-          }}
-        >
-          plus +
-        </button>
-        <button
-          onClick={() =>
-            setGameState({ ...gameState, score1: gameState.score1 - 1 })
-          }
-        >
-          minus -
-        </button>
-        </div>
-        <div>
-        <TeamName team={team2} teamNumber={2} color={color2} />
-        Score: {!Number.isNaN(gameState.score1) ? gameState.score2 : null}
-        <input
-          type="number"
-          value={parseInt(gameState.score2)}
-          onChange={(e) => {
-            setGameState({ ...gameState, score2: parseInt(e.target.value) });
-          }}
-        ></input>
-        <button
-          onClick={() =>
-            setGameState({ ...gameState, score2: gameState.score2 + 1 })
-          }
-        >
-          plus +
-        </button>
-        <button
-          onClick={() =>
-            setGameState({ ...gameState, score2: gameState.score2 - 1 })
-          }
-        >
-          minus -
-        </button>
-        </div>
-        {editTeams ? (
-          <TeamLarge
-            gameState={gameState}
-            setGameState={setGameState}
-            teamNumber={1}
-          />
-        ) : null}
-        {editTeams ? (
-          <Team
-            team={team2}
-            setTeam={setTeam2}
-            teamNumber={2}
-            color={color2}
-            setColor={setColor2}
-          />
-        ) : null}
-      </header>
-    </div>
+    <GameContext.Provider
+      value={{
+        user,
+        setUser,
+        userReview,
+        setUserReview,
+        games,
+      }}
+    >
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="reviews" element={<Reviews />} />
+        <Route path="videos" element={<Videos />} />
+      </Routes>
+    </GameContext.Provider>
   );
 }
 
